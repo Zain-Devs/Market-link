@@ -1,46 +1,116 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { ShoppingBag, Server, User as UserIcon, LogOut, LayoutDashboard, Heart, Package, ChevronDown } from 'lucide-react';
-import { api } from '../api/client';
+import { ShoppingBag, User as UserIcon, LogOut, LayoutDashboard, Heart, Package, ChevronDown } from 'lucide-react';
 import { Tilt3D } from './Tilt3D';
 
 interface NavbarProps {
   activeTab: 'browse' | 'markets' | 'farmers' | 'map' | 'orders' | 'favorites' | 'farmer-dash' | 'admin-dash' | 'product-detail';
   setActiveTab: (tab: any) => void;
-  onOpenAuth: (mode?: 'login' | 'register') => void;
-  onOpenBackendModal: () => void;
   onOpenAbout: () => void;
-  onOpenAi: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   setActiveTab,
-  onOpenAuth,
-  onOpenBackendModal,
-  onOpenAbout,
-  onOpenAi
+  onOpenAbout
 }) => {
   const { user, role, logout } = useAuth();
   const { totalItems, setIsCartOpen, isCartBouncing } = useCart();
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const backendMode = api.getMode();
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200/80 transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-        {/* Zone 1: Wordmark */}
+        {/* Zone 1: Wordmark with Custom SVG Logo */}
         <div className="flex items-center gap-3">
           <Tilt3D maxTilt={14} lift={6} glare={false} scaleOnHover={1.04}>
-          <button
-            onClick={() => setActiveTab('browse')}
-            className="text-left group focus:outline-none"
-          >
-            <span className="text-xl sm:text-2xl font-extrabold tracking-tight font-display text-[#194D26] group-hover:text-emerald-800 transition-colors">
-              MarketLink
-            </span>
-          </button>
+            <button
+              onClick={() => setActiveTab('browse')}
+              className="text-left group focus:outline-none flex items-center gap-2"
+            >
+              {/* Custom SVG Logo: Basket + Leaves + Location Pin */}
+              <svg
+                viewBox="0 0 64 64"
+                className="h-10 w-10 shrink-0"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                {/* Basket Handle (Arc) */}
+                <path
+                  d="M18 26 C18 12, 46 12, 46 26"
+                  stroke="#194D26"
+                  strokeWidth="4.5"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+
+                {/* Basket Body (Trapezoid) */}
+                <path
+                  d="M12 26 L52 26 L47 54 C46.5 56, 45 57, 43 57 L21 57 C19 57, 17.5 56, 17 54 Z"
+                  fill="#194D26"
+                  stroke="#194D26"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
+
+                {/* Basket Rim (Top thick line) */}
+                <rect
+                  x="10"
+                  y="23"
+                  width="44"
+                  height="6"
+                  rx="3"
+                  fill="#194D26"
+                />
+
+                {/* Vertical weave lines inside basket */}
+                <line x1="22" y1="32" x2="21" y2="52" stroke="#F5F5F0" strokeWidth="1.8" strokeLinecap="round" />
+                <line x1="32" y1="32" x2="32" y2="52" stroke="#F5F5F0" strokeWidth="1.8" strokeLinecap="round" />
+                <line x1="42" y1="32" x2="43" y2="52" stroke="#F5F5F0" strokeWidth="1.8" strokeLinecap="round" />
+
+                {/* Leaves on top (Left leaf) */}
+                <path
+                  d="M26 22 C26 14, 34 10, 38 14 C42 18, 36 24, 30 24 Z"
+                  fill="#194D26"
+                />
+                {/* Leaves on top (Right leaf) */}
+                <path
+                  d="M34 22 C36 14, 44 12, 46 18 C48 24, 40 26, 36 24 Z"
+                  fill="#4A7C59"
+                />
+                {/* Leaf veins */}
+                <path
+                  d="M28 22 C30 18, 34 15, 37 15"
+                  stroke="#F5F5F0"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+
+                {/* Location Pin (Brown) */}
+                <path
+                  d="M32 38 C32 38, 24 46, 24 51 C24 55.5, 27.6 58, 32 58 C36.4 58, 40 55.5, 40 51 C40 46, 32 38, 32 38 Z"
+                  fill="#A6895C"
+                  stroke="#8B6F44"
+                  strokeWidth="1.5"
+                  strokeLinejoin="round"
+                />
+                {/* Inner circle of pin */}
+                <circle cx="32" cy="50" r="2.8" fill="#F5F5F0" />
+              </svg>
+
+              {/* Brand Name Text (Market in Green + Link in Brown) */}
+              <span className="text-xl sm:text-2xl font-extrabold tracking-tight font-display">
+                <span className="text-[#194D26] group-hover:text-emerald-800 transition-colors">
+                  Market
+                </span>
+                <span className="text-[#A6895C] group-hover:text-[#8B6F44] transition-colors">
+                  Link
+                </span>
+              </span>
+            </button>
           </Tilt3D>
           <span className="hidden sm:inline-block text-[11px] font-medium tracking-wide uppercase text-stone-400 pl-2 border-l border-stone-200">
             eGreen Basket
@@ -87,33 +157,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             About & Contact
           </button>
-          <button
-            onClick={onOpenAi}
-            className="text-emerald-700 hover:text-emerald-900 transition-colors font-medium flex items-center gap-1"
-          >
-            <span>Ask eGreen</span>
-          </button>
         </nav>
 
         {/* Zone 3: Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Backend Status / Settings Button */}
-          <button
-            type="button"
-            onClick={onOpenBackendModal}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-              backendMode === 'live'
-                ? 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100'
-                : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
-            }`}
-            title="Laravel 10 Sanctum API Status"
-          >
-            <Server className="w-3.5 h-3.5 text-stone-500" />
-            <span className="hidden sm:inline">
-              {backendMode === 'live' ? 'Laravel Live' : 'Sanctum Mock'}
-            </span>
-          </button>
-
           {/* Cart / Pre-Orders Button with Dynamic Green Fill & Impact Animation */}
           <button
             type="button"
@@ -224,20 +271,19 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           ) : (
             <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => onOpenAuth('login')}
+              {/* ✅ Yahan Link laga diya, ab popup ki jagah page khulega */}
+              <Link
+                to="/login"
                 className="px-3 py-1.5 text-xs font-semibold text-stone-700 hover:text-stone-950 transition-colors"
               >
                 Sign In
-              </button>
-              <button
-                type="button"
-                onClick={() => onOpenAuth('register')}
+              </Link>
+              <Link
+                to="/register"
                 className="px-3.5 py-1.5 text-xs font-semibold bg-[#194D26] text-white rounded-lg hover:bg-[#143e1f] transition-colors"
               >
                 Register
-              </button>
+              </Link>
             </div>
           )}
         </div>

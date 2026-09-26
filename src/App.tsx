@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import { CartProvider } from './context/CartContext';
+import { useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { ProductCatalog } from './components/ProductCatalog';
@@ -11,7 +10,6 @@ import { FarmerDirectory } from './components/FarmerDirectory';
 import { OpenStreetMapViewer } from './components/OpenStreetMapViewer';
 import { CartDrawer } from './components/CartDrawer';
 import { FarmerProfileModal } from './components/FarmerProfileModal';
-import { AuthModal } from './components/AuthModal';
 import { BackendIntegrationModal } from './components/BackendIntegrationModal';
 import { CustomerOrdersView } from './components/CustomerOrdersView';
 import { FavoritesView } from './components/FavoritesView';
@@ -21,7 +19,6 @@ import { AiAssistantModal } from './components/AiAssistantModal';
 import { AboutContactModal } from './components/AboutContactModal';
 import { FlyingArrowOverlay } from './components/FlyingArrowOverlay';
 import { CartToastNotification } from './components/CartToastNotification';
-import { AnnouncementBar } from './components/AnnouncementBar';
 import { Footer } from './components/Footer';
 import { api } from './api/client';
 import { Product, Market, User, ProductCategory } from './types';
@@ -30,35 +27,28 @@ import { MapPin, Navigation, Calendar, ShoppingBag, ArrowRight } from 'lucide-re
 function MarketLinkMain() {
   const { user, role } = useAuth();
 
-  // Navigation tab state
   const [activeTab, setActiveTab] = useState<
     'browse' | 'markets' | 'farmers' | 'map' | 'orders' | 'favorites' | 'farmer-dash' | 'admin-dash' | 'product-detail'
   >('browse');
   const [previousTab, setPreviousTab] = useState<string>('browse');
 
-  // Master data
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [markets, setMarkets] = useState<Market[]>([]);
   const [farmers, setFarmers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Search & Filter state
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDay, setSelectedDay] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [selectedMarketId, setSelectedMarketId] = useState<number | null>(null);
 
-  // Selected entities & modals state
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
   const [selectedFarmerId, setSelectedFarmerId] = useState<number | null>(null);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [backendModalOpen, setBackendModalOpen] = useState(false);
   const [aiModalOpen, setAiModalOpen] = useState(false);
   const [aboutModalOpen, setAboutModalOpen] = useState(false);
 
-  // Navigation helper for opening product detail as a separate full page
   const handleOpenProductDetail = (prod: Product | number) => {
     const prodId = typeof prod === 'number' ? prod : prod.id;
     if (activeTab !== 'product-detail') {
@@ -69,7 +59,6 @@ function MarketLinkMain() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Load initial catalog & markets
   const loadData = async () => {
     try {
       const [prods, cats, mrkts, frmrs] = await Promise.all([
@@ -99,29 +88,14 @@ function MarketLinkMain() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FBFBF9] text-[#1E2922]">
-      {/* Top Announcement Ribbon */}
-      <AnnouncementBar
-        onExploreMarkets={() => setActiveTab('markets')}
-        onExploreMap={() => setActiveTab('map')}
-      />
-
-      {/* Top Bar (Strict 3-zone contract) */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        onOpenAuth={(mode = 'login') => {
-          setAuthMode(mode);
-          setAuthModalOpen(true);
-        }}
-        onOpenBackendModal={() => setBackendModalOpen(true)}
         onOpenAbout={() => setAboutModalOpen(true)}
-        onOpenAi={() => setAiModalOpen(true)}
       />
 
-      {/* Main Content Area */}
       <main className="flex-1">
         <AnimatePresence mode="wait">
-          {/* TAB 1: BROWSE PRODUCE CATALOG (Main Storefront) */}
           {activeTab === 'browse' && (
             <motion.div
               key="tab-browse"
@@ -160,7 +134,6 @@ function MarketLinkMain() {
             </motion.div>
           )}
 
-          {/* TAB: SEPARATE DEDICATED PRODUCT DETAIL PAGE (Not a modal) */}
           {activeTab === 'product-detail' && selectedProductId && (
             <motion.div
               key={`tab-product-${selectedProductId}`}
@@ -180,7 +153,6 @@ function MarketLinkMain() {
             </motion.div>
           )}
 
-          {/* TAB 2: MARKETS DIRECTORY */}
           {activeTab === 'markets' && (
             <motion.div
               key="tab-markets"
@@ -201,7 +173,6 @@ function MarketLinkMain() {
             </motion.div>
           )}
 
-          {/* TAB 3: FARMERS & ARTISANS DIRECTORY */}
           {activeTab === 'farmers' && (
             <motion.div
               key="tab-farmers"
@@ -219,7 +190,6 @@ function MarketLinkMain() {
             </motion.div>
           )}
 
-          {/* TAB 4: DEDICATED OPENSTREETMAP VIEW */}
           {activeTab === 'map' && (
             <motion.div
               key="tab-map"
@@ -254,7 +224,6 @@ function MarketLinkMain() {
             </motion.div>
           )}
 
-          {/* TAB 5: CUSTOMER PRE-ORDERS */}
           {activeTab === 'orders' && (
             <motion.div
               key="tab-orders"
@@ -267,7 +236,6 @@ function MarketLinkMain() {
             </motion.div>
           )}
 
-          {/* TAB 6: CUSTOMER FAVORITES */}
           {activeTab === 'favorites' && (
             <motion.div
               key="tab-favorites"
@@ -284,7 +252,6 @@ function MarketLinkMain() {
             </motion.div>
           )}
 
-          {/* TAB 7: FARMER VENDOR PORTAL */}
           {activeTab === 'farmer-dash' && (
             <motion.div
               key="tab-farmer-dash"
@@ -297,7 +264,6 @@ function MarketLinkMain() {
             </motion.div>
           )}
 
-          {/* TAB 8: ADMIN GOVERNANCE CONSOLE */}
           {activeTab === 'admin-dash' && (
             <motion.div
               key="tab-admin-dash"
@@ -312,42 +278,25 @@ function MarketLinkMain() {
         </AnimatePresence>
       </main>
 
-      {/* Flying Green Arrow Animation Overlay */}
       <FlyingArrowOverlay />
-
-      {/* Modern Cart Toast Notification */}
       <CartToastNotification />
 
-      {/* Cart Pre-Order Drawer */}
       <CartDrawer
         onOrderSuccess={handleOrderSuccess}
-        onOpenAuth={() => {
-          setAuthMode('login');
-          setAuthModalOpen(true);
-        }}
+        onOpenAuth={() => {}}
       />
 
-      {/* Farmer Profile Modal */}
       <FarmerProfileModal
         farmerId={selectedFarmerId}
         onClose={() => setSelectedFarmerId(null)}
         onOpenProductDetail={(prod) => handleOpenProductDetail(prod)}
       />
 
-      {/* Auth Modal */}
-      <AuthModal
-        isOpen={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
-        initialMode={authMode}
-      />
-
-      {/* Backend Integration Modal */}
       <BackendIntegrationModal
         isOpen={backendModalOpen}
         onClose={() => setBackendModalOpen(false)}
       />
 
-      {/* AI Assistant Modal (SRS Optional Feature) */}
       <AiAssistantModal
         isOpen={aiModalOpen}
         onClose={() => setAiModalOpen(false)}
@@ -361,13 +310,11 @@ function MarketLinkMain() {
         }}
       />
 
-      {/* About & Contact Modal */}
       <AboutContactModal
         isOpen={aboutModalOpen}
         onClose={() => setAboutModalOpen(false)}
       />
 
-      {/* Footer */}
       <Footer
         onNavigate={(tab) => setActiveTab(tab)}
         onOpenAbout={() => setAboutModalOpen(true)}
@@ -378,11 +325,5 @@ function MarketLinkMain() {
 }
 
 export default function App() {
-  return (
-    <AuthProvider>
-      <CartProvider>
-        <MarketLinkMain />
-      </CartProvider>
-    </AuthProvider>
-  );
+  return <MarketLinkMain />;
 }
