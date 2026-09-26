@@ -1,0 +1,7 @@
+{
+  "name": "MarketLink - Farm Fresh Just a Click Away",
+  "description": "MarketLink eGreen Basket connects local farmers with customers for weekly stock visibility, market location mapping, and pickup pre-orders.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
